@@ -1,0 +1,219 @@
+# This is a Spack Environment file.
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  # package and matrix definitions
+  definitions:
+  - compilers:
+    - '%gcc@12.3'
+  - pythons:
+    - python@3.11.7
+  - mpis:
+    - openmpi schedulers=slurm fabrics=auto
+  - omps:
+    - llvm-openmp
+  - lapack_packages:
+    - openblas
+    - netlib-lapack
+  - lapack_mpis:
+    - netlib-scalapack
+  - python_packages:
+    - py-mpi4py
+    - py-netcdf4
+  - geo_packages:
+    - proj
+    - geos
+  - geo_libs:
+    - libspatialindex
+    - libspatialite
+  - cli_tools:
+    - htop
+    - curl
+  - hdfs:
+    - hdf5 ~cxx~fortran+hl~ipo~java~map+mpi+shared~subfiling~szip~threadsafe+tools
+  - netcdf_tools:
+    - cdo
+    - nco
+  - netcdfs:
+    - netcdf-fortran
+  - solvers:
+    - sundials
+  - modules:
+    - lmod
+
+  # add package specs to the `specs` list
+  specs:
+  # core packages
+  - gcc@12.3
+  - python@3.11.7 %gcc@12.3
+  - rust %gcc@12.3 ^python@3.11.7
+  - cmake %gcc@12.3
+  - gdb %gcc@12.3
+  - slurm
+  - lmod %gcc@12.3
+  #- r@4.4.1 %gcc@12.3
+  # core CLI
+  - matrix:
+    - [$cli_tools]
+    - [$compilers]
+  # MPIs
+  - matrix:
+    - [$mpis]
+    - [$compilers]
+  # numerical
+  - matrix:
+    - [$lapack_packages]
+    - [$compilers]
+  - matrix:
+    - [$solvers]
+    - [$^mpis]
+    - [$compilers]
+  # numerical MPIs
+  - matrix:
+    - [$lapack_mpis]
+    - [$^mpis]
+    # - [$^lapack_packages]
+    - [^openblas]
+    - [$compilers]
+  # GDAL and dependencies
+  # as of postgresql@16.3, the icu4c is needed, however, this hasn't reflected yet on Spack
+  # package for postgresql. postgresql itself is needed for GDAL
+  - gdal%gcc@12.3++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite ^netcdf-c~mpi ^openblas ^arpack-ng~mpi
+  - gdal%gcc@12.3++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite ^netcdf-c+mpi ^openblas ^arpack-ng+mpi
+  - icu4c%gcc@12.3
+  # geolibs
+  - matrix:
+    - [$geo_libs]
+    - [$compilers]
+  # netcdf-tools
+  - matrix:
+    - [nco]
+    - [^netcdf-c+mpi, ^netcdf-c~mpi]
+    - [$compilers]
+  - matrix:
+    - [cdo]
+    - [^netcdf-c+mpi ^fftw+mpi, ^netcdf-c~mpi ^fftw~mpi]
+    - [$compilers]
+  # python packages
+  - py-mpi4py %gcc@12.3 ^python@3.11.7 ^openmpi
+  #- py-wxpython ^python@3.11.7 %gcc@12.3
+  # mpi hdf5s
+  - matrix:
+    - [hdf5 +hl+mpi+tools+shared+threadsafe+szip]
+    - [$^mpis]
+    - [$compilers]
+  # serial hdf5s
+  - matrix:
+    - [hdf5 +hl~mpi+tools+shared+threadsafe+szip ^zlib-ng]
+    - [$compilers]
+  # mpi netcdfs
+  - matrix:
+    - [netcdf-c +blosc~byterange~dap~fsync~hdf4~ipo~jna~logging+mpi~nczarr_zip+optimize~parallel-netcdf+pic+shared+szip+zstd
+        ^zlib-ng ^hdf5+mpi, netcdf-fortran ^netcdf-c+mpi ^zlib-ng]
+    - [$^mpis]
+    - [$compilers]
+  # serial netcdfs
+  - matrix:
+    - [netcdf-c ~mpi ^zlib-ng ^hdf5~mpi, netcdf-fortran ^netcdf-c~mpi ^zlib-ng]
+    - [$compilers]
+  # NCLs
+  - matrix:
+    - [ncl]
+    - [^netcdf-c~mpi ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi ^hdf5+mpi+threadsafe ^esmf+mpi]
+    - [$compilers]
+  # grass GIS
+  #- grass %gcc@12.3
+
+  # view
+  view: false
+
+  # packages
+  packages:
+    all:
+      target: [x86_64]
+      providers:
+        mpi:: [openmpi] # avoiding mpi-serial to be included as a provider
+    slurm:
+      buildable: false
+      externals:
+      - prefix: /usr
+        spec: slurm@22.05.7
+    lz4: # to avoid dependency conflicts
+      prefer:
+      - build_system=makefile
+
+  # concretizer config
+  concretizer:
+    unify: when_possible
+
+  # configurations
+  config:
+    install_tree:
+      root: $env/core/
+      padded_length: 128
+
+  # mirrors 
+  mirrors: {}
+
+  # compilers
+  compilers:
+  - compiler:
+      spec: gcc@=12.3.0
+      paths:
+        cc: /work/comphyd_lab/local/modules/spack/2024v4/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/gcc-12.3.0-s5w3pu3nq7xgec5mm3jjp3lf426yp53n/bin/gcc
+        cxx: /work/comphyd_lab/local/modules/spack/2024v4/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/gcc-12.3.0-s5w3pu3nq7xgec5mm3jjp3lf426yp53n/bin/g++
+        f77: /work/comphyd_lab/local/modules/spack/2024v4/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/gcc-12.3.0-s5w3pu3nq7xgec5mm3jjp3lf426yp53n/bin/gfortran
+        fc: /work/comphyd_lab/local/modules/spack/2024v4/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/gcc-12.3.0-s5w3pu3nq7xgec5mm3jjp3lf426yp53n/bin/gfortran
+      flags: {}
+      operating_system: rocky8
+      target: x86_64
+      modules: []
+      environment: {}
+      extra_rpaths: []
+
+  # modules
+  modules:
+    prefix_inspections:
+      ./lib:
+      - LIBRARY_PATH
+      - LD_LIBRARY_PATH
+      ./lib64:
+      - LIBRARY_PATH
+      - LD_LIBRARY_PATH
+    default:
+      enable:
+      - lmod
+      roots:
+        lmod: modules
+      lmod:
+        hierarchy:
+        - mpi
+        core_compilers:
+        - gcc@=12.3.0
+        - gcc@=8.5.0
+        hash_length: 0
+        include:
+        - gcc
+        exclude:
+        - '%gcc@8.5.0'
+        - slurm
+        - lmod
+        ^python:
+          autoload: direct
+        all:
+          environment:
+            set:
+              '{name}_ROOT': '{prefix}'
+          conflict:
+            - '{name}'
+        openmpi:
+          environment:
+            set:
+              SLURM_MPI_TYPE: pmix
+              OMPI_MCA_btl_openib_warn_default_gid_prefix: '0'
+        projections:
+          all: '{name}/{version}'
+          +mpi: '{name}-mpi/{version}'
+          ^netcdf-c+mpi: '{name}-mpi/{version}'
+          ^arpack-ng+mpi: '{name}-mpi/{version}'
