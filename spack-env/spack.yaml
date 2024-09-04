@@ -132,8 +132,6 @@ spack:
   packages:
     all:
       target: [x86_64]
-      providers:
-        mpi:: [openmpi] # avoiding mpi-serial to be included as a provider
     slurm:
       buildable: false
       externals:
@@ -199,6 +197,7 @@ spack:
         - '%gcc@8.5.0'
         - slurm
         - lmod
+        - tcl
         ^python:
           autoload: direct
         all:
@@ -217,3 +216,4 @@ spack:
           +mpi: '{name}-mpi/{version}'
           ^netcdf-c+mpi: '{name}-mpi/{version}'
           ^arpack-ng+mpi: '{name}-mpi/{version}'
+          ^mpi-serial: '{name}-mpi-serial/{version}'
