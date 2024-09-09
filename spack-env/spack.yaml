@@ -10,7 +10,7 @@ spack:
   - pythons:
     - python@3.11.7
   - mpis:
-    - openmpi schedulers=slurm fabrics=auto
+    - openmpi@4 +internal-hwloc+internal-pmix+pmi fabrics=psm2,ucx schedulers=slurm
   - omps:
     - llvm-openmp
   - lapack_packages:
@@ -29,7 +29,7 @@ spack:
     - libspatialite
   - cli_tools:
     - htop
-    - curl
+    - curl+libidn2
   - hdfs:
     - hdf5 ~cxx~fortran+hl~ipo~java~map+mpi+shared~subfiling~szip~threadsafe+tools
   - netcdf_tools:
@@ -52,7 +52,7 @@ spack:
   - gdb %gcc@12.3
   - slurm
   - lmod %gcc@12.3
-  #- r@4.4.1 %gcc@12.3
+  - r@4.4.1 %gcc@12.3
   # core CLI
   - matrix:
     - [$cli_tools]
@@ -123,7 +123,7 @@ spack:
     - [^netcdf-c~mpi ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi ^hdf5+mpi+threadsafe ^esmf+mpi]
     - [$compilers]
   # grass GIS
-  #- grass %gcc@12.3
+  # - grass ^python@3.8 %gcc@12.3
 
   # view
   view: false
@@ -135,7 +135,7 @@ spack:
     slurm:
       buildable: false
       externals:
-      - prefix: /usr
+      - prefix: /work/comphyd_lab/local/usr
         spec: slurm@22.05.7
     lz4: # to avoid dependency conflicts
       prefer:
@@ -195,7 +195,6 @@ spack:
         - gcc
         exclude:
         - '%gcc@8.5.0'
-        - slurm
         - lmod
         - tcl
         ^python:
@@ -206,11 +205,6 @@ spack:
               '{name}_ROOT': '{prefix}'
           conflict:
             - '{name}'
-        openmpi:
-          environment:
-            set:
-              SLURM_MPI_TYPE: pmix
-              OMPI_MCA_btl_openib_warn_default_gid_prefix: '0'
         projections:
           all: '{name}/{version}'
           +mpi: '{name}-mpi/{version}'
