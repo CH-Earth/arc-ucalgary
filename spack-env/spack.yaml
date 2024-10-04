@@ -99,6 +99,7 @@ spack:
     - [$compilers]
   - matrix:
     - [icu4c]
+    - [^python@3.11.7]
     - [$compilers]
   # geolibs
   - matrix:
@@ -147,17 +148,19 @@ spack:
   # js tools
   - matrix:
     - [$js]
+    - [^python@3.11.7]
     - [$compilers]
   # terminado
   - matrix:
     - [py-terminado]
+    - [^python@3.11.7]
     - [$compilers]
   # NCLs
-  #- matrix:
-  #  - [ncl]
-  #  - [^netcdf-c~mpi ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi ^hdf5+mpi+threadsafe
-  #      ^esmf+mpi]
-  #  - [$compilers]
+  - matrix:
+    - [ncl]
+    - [^netcdf-c~mpi ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi ^hdf5+mpi+threadsafe
+        ^esmf+mpi]
+    - [$compilers]
   # grass GIS
   # - grass ^python@3.8 %gcc@12.3
 
@@ -246,4 +249,5 @@ spack:
           ^netcdf-c+mpi: '{name}-mpi/{version}'
           ^arpack-ng+mpi: '{name}-mpi/{version}'
           ^mpi-serial: '{name}-mpi-serial/{version}'
+          cairo+X: '{name}-X/{version}'
 
