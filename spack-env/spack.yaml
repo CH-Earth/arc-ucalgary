@@ -5,8 +5,10 @@
 spack:
   # package and matrix definitions
   definitions:
-  - compilers:
+  - gcc_compilers:
     - '%gcc@14.2.0'
+  - intel_compilers:
+    - '%oneapi@2024.2.1'
   - pythons:
     - python@3.11.7
   - mpis:
@@ -30,6 +32,7 @@ spack:
     - libspatialite
   - cli_tools:
     - htop
+    - tree
     - curl+libidn2
   - hdfs:
     - hdf5 ~cxx~fortran+hl~ipo~java~map+mpi+shared~subfiling~szip~threadsafe+tools
@@ -49,120 +52,140 @@ spack:
   specs:
   # core packages
   - gcc@14.2.0 %gcc@8.5.0
+  - intel-oneapi-compilers@2024.2.1 %gcc@8.5.0
+  - nvhpc+blas+lapack+mpi@23.09 %gcc@8.5.0
+  - slurm
+
+  # gcc packages
+  - matrix:
+    - [fribidi]
+    - [$gcc_compilers]
   - matrix:
     - [python@3.11.7]
-    - [$compilers]
+    - [$gcc_compilers]
   - matrix:
     - [rust]
     - [^python@3.11.7]
-    - [$compilers]
+    - [$gcc_compilers]
   - matrix:
     - [cmake]
-    - [$compilers]
+    - [$gcc_compilers]
   - matrix:
     - [gdb]
-    - [$compilers]
-  - slurm
+    - [$gcc_compilers]
   - matrix:
     - [lmod]
-    - [$compilers]
+    - [$gcc_compilers]
   - matrix:
     - [r@4.4.1]
-    - [$compilers]
+    - [$gcc_compilers]
   # core CLI
   - matrix:
     - [$cli_tools]
-    - [$compilers]
+    - [$gcc_compilers]
   # MPIs
   - matrix:
     - [$mpis]
-    - [$compilers]
+    - [$gcc_compilers]
   # numerical
   - matrix:
     - [$lapack_packages]
-    - [$compilers]
+    - [$gcc_compilers]
   - matrix:
     - [$solvers]
     - [$^mpis]
-    - [$compilers]
+    - [$gcc_compilers]
   # numerical MPIs
   - matrix:
     - [$lapack_mpis]
     - [$^mpis]
-    - [$compilers]
+    - [$gcc_compilers]
   # GDAL and dependencies
   # as of postgresql@16.3, the icu4c is needed, however, this hasn't reflected yet on Spack
   # package for postgresql. postgresql itself is needed for GDAL
   - matrix:
     - [gdal++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite]
     - [^netcdf-c~mpi ^openblas ^arpack-ng~mpi, ^netcdf-c+mpi ^openblas ^arpack-ng+mpi]
-    - [$compilers]
+    - [$gcc_compilers]
   - matrix:
     - [icu4c]
     - [^python@3.11.7]
-    - [$compilers]
+    - [$gcc_compilers]
   # geolibs
   - matrix:
     - [$geo_libs]
-    - [$compilers]
+    - [$gcc_compilers]
   # netcdf-tools
   - matrix:
     - [nco]
     - [^netcdf-c+mpi, ^netcdf-c~mpi]
-    - [$compilers]
+    - [$gcc_compilers]
   - matrix:
     - [cdo]
     - [^netcdf-c+mpi ^fftw+mpi, ^netcdf-c~mpi ^fftw~mpi]
-    - [$compilers]
+    - [$gcc_compilers]
   # python packages
   - matrix:
     - [py-mpi4py]
     - [^python@3.11.7]
     - [$^mpis]
-    - [$compilers]
+    - [$gcc_compilers]
   #- py-wxpython ^python@3.11.7 %gcc@12.3
   - matrix:
     - [py-jupyterlab@4.0.1]
     - [^python@3.11.7]
     - [^qt@5]
-    - [$compilers]
+    - [$gcc_compilers]
   # mpi hdf5s
   - matrix:
     - [hdf5 +hl+mpi+tools+shared+threadsafe+szip]
     - [$^mpis]
-    - [$compilers]
+    - [$gcc_compilers]
   # serial hdf5s
   - matrix:
     - [hdf5 +hl~mpi+tools+shared+threadsafe+szip ^zlib-ng]
-    - [$compilers]
+    - [$gcc_compilers]
   # mpi netcdfs
   - matrix:
     - [netcdf-c +blosc~byterange~dap~fsync~hdf4~ipo~jna~logging+mpi~nczarr_zip+optimize~parallel-netcdf+pic+shared+szip+zstd
         ^zlib-ng ^hdf5+mpi, netcdf-fortran ^netcdf-c+mpi ^zlib-ng]
     - [$^mpis]
-    - [$compilers]
+    - [$gcc_compilers]
   # serial netcdfs
   - matrix:
     - [netcdf-c ~mpi ^zlib-ng ^hdf5~mpi, netcdf-fortran ^netcdf-c~mpi ^zlib-ng]
-    - [$compilers]
+    - [$gcc_compilers]
   # js tools
   - matrix:
     - [$js]
     - [^python@3.11.7]
-    - [$compilers]
+    - [$gcc_compilers]
   # terminado
   - matrix:
     - [py-terminado]
     - [^python@3.11.7]
-    - [$compilers]
+    - [$gcc_compilers]
   # NCLs
   - matrix:
     - [ncl]
     - [^netcdf-c~mpi ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi ^hdf5+mpi+threadsafe
         ^esmf+mpi]
-    - [$compilers]
-  # grass GIS
-  # - grass ^python@3.8 %gcc@12.3
+    - [$gcc_compilers]
+  # r packages
+  - matrix:
+    - [r-sf]
+    - [^r@4.4.1]
+    - [^netcdf-c~mpi]
+    - [$gcc_compilers]
+  - matrix:
+    - [r-dplyr, r-lubridate]
+    - [^r@4.4.1]
+    - [^openblas]
+    - [$gcc_compilers]
+  # oneapi specific packages
+  - matrix:
+    - [intel-oneapi-mpi]
+    - [$intel_compilers]
 
   # view
   view: false
@@ -206,6 +229,32 @@ spack:
       modules: []
       environment: {}
       extra_rpaths: []
+  - compiler:
+      spec: oneapi@=2024.2.1
+      paths:
+        cc: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/intel-oneapi-compilers-2024.2.1-yd5h4yic6ldul33bv5dhfnxnlix62nnu/compiler/latest/bin/icx
+        cxx: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/intel-oneapi-compilers-2024.2.1-yd5h4yic6ldul33bv5dhfnxnlix62nnu/compiler/latest/bin/icpx
+        f77: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/intel-oneapi-compilers-2024.2.1-yd5h4yic6ldul33bv5dhfnxnlix62nnu/compiler/latest/bin/ifx
+        fc: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/intel-oneapi-compilers-2024.2.1-yd5h4yic6ldul33bv5dhfnxnlix62nnu/compiler/latest/bin/ifx
+      flags: {}
+      operating_system: rocky8
+      target: x86_64
+      modules: []
+      environment: {}
+      extra_rpaths: []
+  - compiler:
+      spec: nvhpc@=23.9
+      paths:
+        cc: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/nvhpc-23.9-43dzgtxdls3mduy4xo7tjcz2ej6mf4ih/Linux_x86_64/23.9/compilers/bin/nvc
+        cxx: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/nvhpc-23.9-43dzgtxdls3mduy4xo7tjcz2ej6mf4ih/Linux_x86_64/23.9/compilers/bin/nvc++
+        f77: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/nvhpc-23.9-43dzgtxdls3mduy4xo7tjcz2ej6mf4ih/Linux_x86_64/23.9/compilers/bin/nvfortran
+        fc: /work/comphyd_lab/local/modules/spack/2024v5/core/__spack_path_placeholder__/__spack_path_placeholder__/__spack_path_placeholder/linux-rocky8-x86_64/gcc-8.5.0/nvhpc-23.9-43dzgtxdls3mduy4xo7tjcz2ej6mf4ih/Linux_x86_64/23.9/compilers/bin/nvfortran
+      flags: {}
+      operating_system: rocky8
+      target: x86_64
+      modules: []
+      environment: {}
+      extra_rpaths: []
 
   # modules
   modules:
@@ -228,9 +277,12 @@ spack:
         - gcc@=14.2.0
         - gcc@=8.5.0
         - llvm
+        - nvhpc@=23.09
         hash_length: 0
         include:
         - gcc
+        - intel-oneapi-compilers
+        - nvhpc
         exclude:
         - '%gcc@8.5.0'
         - lmod
