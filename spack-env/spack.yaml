@@ -47,6 +47,8 @@ spack:
     - lmod
   - js:
     - node-js
+  - mswindows: # packages that provide interfaces found in MS Windows
+    - mono
 
   # add package specs to the `specs` list
   specs:
@@ -182,10 +184,20 @@ spack:
     - [^r@4.4.1]
     - [^openblas]
     - [$gcc_compilers]
-  # oneapi specific packages
   - matrix:
-    - [intel-oneapi-mpi]
-    - [$intel_compilers]
+    - [$mswindows]
+    - [^python@3.11.7]
+    - [$gcc_compilers]
+  - matrix:
+    - [gnuplot]
+    - [^cairo~fc]
+    - [^harfbuzz@9]
+    - [$gcc_compilers]
+
+  ## oneapi specific packages
+  #- matrix:
+  #  - [intel-oneapi-mpi]
+  #  - [$intel_compilers]
 
   # view
   view: false
@@ -194,6 +206,11 @@ spack:
   packages:
     all:
       target: [x86_64]
+    bash:
+      buildable: false
+      externals:
+      - prefix: /bin
+        spec: bash@4.4.20
     slurm:
       buildable: false
       externals:
@@ -202,6 +219,21 @@ spack:
     lz4: # to avoid dependency conflicts
       prefer:
       - build_system=makefile
+    gmake:
+      require:
+      - "%gcc@8.5.0"
+    cmake:
+      require:
+      - "%gcc@14.2.0"
+    perl:
+      require:
+      - "%gcc@8.5.0"
+    curl:
+      require:
+      - "%gcc"
+    python:
+      require:
+      - "%gcc"
 
   # concretizer config
   concretizer:
