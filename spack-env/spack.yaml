@@ -56,7 +56,7 @@ spack:
   - gcc@14.2.0 %gcc@8.5.0
   - intel-oneapi-compilers@2024.2.1 %gcc@8.5.0
   - nvhpc+blas+lapack+mpi@23.09 %gcc@8.5.0
-  - slurm
+  - slurm@24.11.0-1
 
   # gcc packages
   - matrix:
@@ -66,7 +66,7 @@ spack:
     - [python@3.11.7]
     - [$gcc_compilers]
   - matrix:
-    - [rust]
+    - [rust@1.78.0]
     - [^python@3.11.7]
     - [$gcc_compilers]
   - matrix:
@@ -88,13 +88,14 @@ spack:
   # MPIs
   - matrix:
     - [$mpis]
+    - [^slurm@24.11.0-1]
     - [$gcc_compilers]
   # numerical
   - matrix:
     - [$lapack_packages]
     - [$gcc_compilers]
   - matrix:
-    - [$solvers]
+    - [sundials@7.1.1+f2003+fcmix+int64]
     - [$^mpis]
     - [$gcc_compilers]
   # numerical MPIs
@@ -136,13 +137,13 @@ spack:
   - matrix:
     - [py-jupyterlab@4.0.1]
     - [^python@3.11.7]
-    - [^qt@5]
+    - [^qt@5.15.14]
     - [$gcc_compilers]
   # mpi hdf5s
   - matrix:
-    - [hdf5 +hl+mpi+tools+shared+threadsafe+szip]
-    - [$^mpis]
-    - [$gcc_compilers]
+     - [hdf5 +hl+mpi+tools+shared+threadsafe+szip]
+     - [$^mpis]
+     - [$gcc_compilers]
   # serial hdf5s
   - matrix:
     - [hdf5 +hl~mpi+tools+shared+threadsafe+szip ^zlib-ng]
@@ -193,6 +194,9 @@ spack:
     - [^cairo~fc]
     - [^harfbuzz@9]
     - [$gcc_compilers]
+  - matrix:
+    - [cudnn, cuda]
+    - ['%gcc@8.5.0']
 
   ## oneapi specific packages
   #- matrix:
@@ -214,26 +218,26 @@ spack:
     slurm:
       buildable: false
       externals:
-      - prefix: /work/comphyd_lab/local/usr
-        spec: slurm@22.05.7
+      - prefix: /work/comphyd_lab/local/usr/slurm-24.11.0-1.el8.x86_64/usr/
+        spec: slurm@24.11.0-1
     lz4: # to avoid dependency conflicts
       prefer:
       - build_system=makefile
     gmake:
       require:
-      - "%gcc@8.5.0"
+      - '%gcc@8.5.0'
     cmake:
       require:
-      - "%gcc@14.2.0"
+      - '%gcc@14.2.0'
     perl:
       require:
-      - "%gcc@8.5.0"
+      - '%gcc@8.5.0'
     curl:
       require:
-      - "%gcc"
+      - '%gcc'
     python:
       require:
-      - "%gcc"
+      - '%gcc'
 
   # concretizer config
   concretizer:
@@ -333,5 +337,6 @@ spack:
           ^netcdf-c+mpi: '{name}-mpi/{version}'
           ^arpack-ng+mpi: '{name}-mpi/{version}'
           ^mpi-serial: '{name}-mpi-serial/{version}'
-          cairo+X: '{name}-X/{version}'
+          cairo+X+gobject: '{name}-X-gobject/{version}'
+
 
