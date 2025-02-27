@@ -34,6 +34,7 @@ spack:
     - htop
     - tree
     - curl+libidn2
+    - p7zip
   - hdfs:
     - hdf5 ~cxx~fortran+hl~ipo~java~map+mpi+shared~subfiling~szip~threadsafe+tools
   - netcdf_tools:
@@ -107,8 +108,9 @@ spack:
   # as of postgresql@16.3, the icu4c is needed, however, this hasn't reflected yet on Spack
   # package for postgresql. postgresql itself is needed for GDAL
   - matrix:
-    - [gdal++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite]
-    - [^netcdf-c~mpi ^openblas ^arpack-ng~mpi, ^netcdf-c+mpi ^openblas ^arpack-ng+mpi]
+    - [gdal++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite+hdf4]
+    - [^netcdf-c~mpi~parallel-netcdf ^openblas ^arpack-ng~mpi, ^netcdf-c+mpi~parallel-netcdf ^openblas ^arpack-ng+mpi]
+    - [^py-numpy@1.26.4]
     - [$gcc_compilers]
   - matrix:
     - [icu4c]
@@ -121,11 +123,11 @@ spack:
   # netcdf-tools
   - matrix:
     - [nco]
-    - [^netcdf-c+mpi, ^netcdf-c~mpi]
+    - [^netcdf-c+mpi~parallel-netcdf, ^netcdf-c~mpi~parallel-netcdf]
     - [$gcc_compilers]
   - matrix:
     - [cdo]
-    - [^netcdf-c+mpi ^fftw+mpi, ^netcdf-c~mpi ^fftw~mpi]
+    - [^netcdf-c+mpi~parallel-netcdf ^fftw+mpi, ^netcdf-c~mpi~parallel-netcdf ^fftw~mpi]
     - [$gcc_compilers]
   # python packages
   - matrix:
@@ -151,12 +153,12 @@ spack:
   # mpi netcdfs
   - matrix:
     - [netcdf-c +blosc~byterange~dap~fsync~hdf4~ipo~jna~logging+mpi~nczarr_zip+optimize~parallel-netcdf+pic+shared+szip+zstd
-        ^zlib-ng ^hdf5+mpi, netcdf-fortran ^netcdf-c+mpi ^zlib-ng]
+        ^zlib-ng ^hdf5+mpi, netcdf-fortran~doc ^netcdf-c+mpi~parallel-netcdf ^zlib-ng]
     - [$^mpis]
     - [$gcc_compilers]
   # serial netcdfs
   - matrix:
-    - [netcdf-c ~mpi ^zlib-ng ^hdf5~mpi, netcdf-fortran ^netcdf-c~mpi ^zlib-ng]
+    - [netcdf-c~mpi~parallel-netcdf ^zlib-ng ^hdf5~mpi, netcdf-fortran~doc ^netcdf-c~mpi~parallel-netcdf ^zlib-ng]
     - [$gcc_compilers]
   # js tools
   - matrix:
@@ -171,20 +173,38 @@ spack:
   # NCLs
   - matrix:
     - [ncl]
-    - [^netcdf-c~mpi ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi ^hdf5+mpi+threadsafe
+    - [^netcdf-c~mpi~parallel-netcdf ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi~parallel-netcdf ^hdf5+mpi+threadsafe
         ^esmf+mpi]
+    - [^parallelio+timing~pnetcdf]
     - [$gcc_compilers]
   # r packages
   - matrix:
-    - [r-sf]
+    - [r-sf@1.0-12]
     - [^r@4.4.1]
+    - [^gdal++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite+hdf4]
     - [^netcdf-c~mpi]
+    - [^py-numpy@1.26.4]
     - [$gcc_compilers]
   - matrix:
     - [r-dplyr, r-lubridate]
     - [^r@4.4.1]
     - [^openblas]
     - [$gcc_compilers]
+  - matrix:
+    - [r-exactextractr@0.10.0]
+    - [^r@4.4.1]
+    - [^gdal++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite+hdf4]
+    - [^netcdf-c~mpi]
+    - [^py-numpy@1.26.4]
+    - [$gcc_compilers]
+  - matrix:
+    - [r-renv]
+    - [^r@4.4.1]
+    - [$gcc_compilers]
+  - matrix:
+    - [r-rmpi]
+    - [$gcc_compilers]
+
   - matrix:
     - [$mswindows]
     - [^python@3.11.7]
@@ -194,6 +214,24 @@ spack:
     - [^cairo~fc]
     - [^harfbuzz@9]
     - [$gcc_compilers]
+  - matrix:
+    - [apptainer]
+    - [$gcc_compilers]
+  - matrix:
+    - [gptl+pmpi+papi+nestedomp]
+    - [$gcc_compilers]
+  - matrix:
+    - [parallelio@2.6.2+timing~pnetcdf]
+    - [^openmpi@4.1.6, ^mpi-serial ^netcdf-c~mpi~parallel-netcdf]
+    - [$gcc_compilers]
+  - matrix:
+    - [py-cdo]
+    - [^netcdf-c~mpi~parallel-netcdf]
+    - [^py-netcdf4@1.6.5]
+    - [^py-numpy@1.26.4]
+    - [$gcc_compilers]
+
+  # Nvidia CUDA
   - matrix:
     - [cudnn, cuda]
     - ['%gcc@8.5.0']
@@ -338,5 +376,4 @@ spack:
           ^arpack-ng+mpi: '{name}-mpi/{version}'
           ^mpi-serial: '{name}-mpi-serial/{version}'
           cairo+X+gobject: '{name}-X-gobject/{version}'
-
 
