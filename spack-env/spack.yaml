@@ -12,7 +12,7 @@ spack:
   - pythons:
     - python@3.11.7
   - mpis:
-    - openmpi@4 +internal-hwloc+internal-pmix+pmi fabrics=psm2,ucx schedulers=slurm
+    - openmpi@4 +internal-hwloc+internal-pmix+pmi+legacylaunchers fabrics=psm2,ucx schedulers=slurm
   - omps:
     - llvm-openmp
   - lapack_packages:
@@ -97,19 +97,20 @@ spack:
     - [$gcc_compilers]
   - matrix:
     - [sundials@7.1.1+f2003+fcmix+int64]
-    - [$^mpis]
+    - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
   # numerical MPIs
   - matrix:
     - [$lapack_mpis]
-    - [$^mpis]
+    - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
   # GDAL and dependencies
   # as of postgresql@16.3, the icu4c is needed, however, this hasn't reflected yet on Spack
   # package for postgresql. postgresql itself is needed for GDAL
   - matrix:
     - [gdal++armadillo+cfitsio+freexl+geos+hdf5+netcdf+postgresql+python+qhull+spatialite+hdf4]
-    - [^netcdf-c~mpi~parallel-netcdf ^openblas ^arpack-ng~mpi, ^netcdf-c+mpi~parallel-netcdf ^openblas ^arpack-ng+mpi]
+    - [^netcdf-c~mpi~parallel-netcdf ^openblas ^arpack-ng~mpi,
+      ^netcdf-c+mpi~parallel-netcdf ^openblas ^arpack-ng+mpi ^openmpi+legacylaunchers]
     - [^py-numpy@1.26.4]
     - [$gcc_compilers]
   - matrix:
@@ -133,7 +134,7 @@ spack:
   - matrix:
     - [py-mpi4py]
     - [^python@3.11.7]
-    - [$^mpis]
+    - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
   #- py-wxpython ^python@3.11.7 %gcc@12.3
   - matrix:
@@ -144,7 +145,7 @@ spack:
   # mpi hdf5s
   - matrix:
      - [hdf5 +hl+mpi+tools+shared+threadsafe+szip]
-     - [$^mpis]
+     - [^openmpi+legacylaunchers]
      - [$gcc_compilers]
   # serial hdf5s
   - matrix:
@@ -154,7 +155,7 @@ spack:
   - matrix:
     - [netcdf-c +blosc~byterange~dap~fsync~hdf4~ipo~jna~logging+mpi~nczarr_zip+optimize~parallel-netcdf+pic+shared+szip+zstd
         ^zlib-ng ^hdf5+mpi, netcdf-fortran~doc ^netcdf-c+mpi~parallel-netcdf ^zlib-ng]
-    - [$^mpis]
+    - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
   # serial netcdfs
   - matrix:
@@ -174,7 +175,7 @@ spack:
   - matrix:
     - [ncl]
     - [^netcdf-c~mpi~parallel-netcdf ^hdf5~mpi+threadsafe ^esmf~mpi, ^netcdf-c+mpi~parallel-netcdf ^hdf5+mpi+threadsafe
-        ^esmf+mpi]
+        ^esmf+mpi ^openmpi+legacylaunchers]
     - [^parallelio+timing~pnetcdf]
     - [$gcc_compilers]
   # r packages
@@ -203,6 +204,7 @@ spack:
     - [$gcc_compilers]
   - matrix:
     - [r-rmpi]
+    - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
 
   - matrix:
@@ -219,16 +221,21 @@ spack:
     - [$gcc_compilers]
   - matrix:
     - [gptl+pmpi+papi+nestedomp]
+    - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
   - matrix:
     - [parallelio@2.6.2+timing~pnetcdf]
-    - [^openmpi@4.1.6, ^mpi-serial ^netcdf-c~mpi~parallel-netcdf]
+    - [^openmpi+legacylaunchers, ^mpi-serial ^netcdf-c~mpi~parallel-netcdf]
     - [$gcc_compilers]
   - matrix:
     - [py-cdo]
     - [^netcdf-c~mpi~parallel-netcdf]
     - [^py-netcdf4@1.6.5]
     - [^py-numpy@1.26.4]
+    - [$gcc_compilers]
+  - matrix:
+    - [parallel-netcdf@1.12.3]
+    - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
 
   # Nvidia CUDA
