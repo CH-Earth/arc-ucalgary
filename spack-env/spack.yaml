@@ -224,7 +224,7 @@ spack:
     - [^openmpi+legacylaunchers]
     - [$gcc_compilers]
   - matrix:
-    - [parallelio@2.6.2+timing~pnetcdf]
+    - [parallelio@2.6.2+timing~pnetcdf+ncint]
     - [^openmpi+legacylaunchers, ^mpi-serial ^netcdf-c~mpi~parallel-netcdf]
     - [$gcc_compilers]
   - matrix:
@@ -236,6 +236,9 @@ spack:
   - matrix:
     - [parallel-netcdf@1.12.3]
     - [^openmpi+legacylaunchers]
+    - [$gcc_compilers]
+  - matrix:
+    - [pipx]
     - [$gcc_compilers]
 
   # Nvidia CUDA
